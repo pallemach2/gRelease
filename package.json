@@ -1,15 +1,20 @@
 {
   "name": "grelease",
   "version": "v1.0.0",
-  "description": "A simple Node-CLI to simplify git releases.",
+  "description": "A Node-CLI to simplify git releases.",
   "main": "index.js",
   "scripts": {},
   "keywords": [
     "cli",
     "release",
-    "git"
+    "git",
+    "grelease"
   ],
-  "author": "Pascal Schlicht",
+  "author": "Pascal Schlicht <npm@pascalschlicht.de> (https://pascalschlicht.de)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pallemach2/gRelease.git"
+  },
   "license": "ISC",
   "dependencies": {
     "bl": "^4.0.3",
@@ -19,5 +24,9 @@
   },
   "bin": {
     "grelease": "./index.js"
+  },
+  "engines": {
+    "node": ">= 12.0.0",
+    "npm": ">= 6.0.0"
   }
 }

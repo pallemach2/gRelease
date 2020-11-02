@@ -17,6 +17,11 @@ let loadedFile = fs.readFileSync('./.grelease', 'utf8');
 const config = JSON.parse(loadedFile);
 let releaseBranch = '';
 
+let rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
 async function execute(command, ags) {
   const child = childProcess.spawn(command, ags);
   const stdout = child.stdout ? new BufferList() : '';
@@ -56,7 +61,7 @@ async function execute(command, ags) {
 }
 
 async function checkCleanWorkingTree() {
-  console.log(chalk.green('- Checking local repository for uncommited changes ...'));
+  console.log(chalk.green('- Checking local repository for uncommited changes'));
   let res = await execute('git', ['status']);
 
   if (!res.toString().includes('nothing to commit, working tree clean')) {
@@ -111,11 +116,6 @@ async function readNewTag(newAttempt = false) {
       latestRelease = tags[tags.length - 1]
     }
 
-    let rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
     rl.question(newAttempt ? 'Version already exists. New version? ' : `Which version do you want to release? (Last release: ${latestRelease}) `, async (tag) => {
       if (await checkNewTag(tag)) {
         resolve(tag);
@@ -134,11 +134,6 @@ async function checkDevBranch() {
 
     if (currentBranch !== config.devBranch && currentBranch !== releaseBranch && config.masterBranch !== currentBranch) {
       console.log(`You are not in the development branch ('${config.devBranch}'). You are in '${currentBranch}'.`);
-
-      let rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-      });
 
       rl.question("Do you want to checkout the development branch and merge the current branch? (y/n) ", async (answer) => {
         if (answer === 'y') {
@@ -161,11 +156,6 @@ async function checkDevBranch() {
 
 async function doManualChanges() {
   return new Promise((resolve, _) => {
-    let rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
     rl.question("You can apply changes to the files now. Press Enter when you are ready to release ... ", async (tag) => {
       resolve();
       rl.close();
@@ -174,7 +164,7 @@ async function doManualChanges() {
 }
 
 async function switchToReleaseBranch() {
-  console.log(chalk.green(`- Checking out to release branch ('${releaseBranch}') ... `));
+  console.log(chalk.green(`- Checking out to release branch ('${releaseBranch}') `));
 
   if (releaseBranch === '') throw new Error('Releasebranch name can not be empty.');
 
@@ -186,12 +176,12 @@ async function switchToReleaseBranch() {
     await execute('git', ['checkout', '-b', releaseBranch]);
   }
 
-  console.log(chalk.green(`- Merging '${config.devBranch}' into '${releaseBranch}' ...`));
+  console.log(chalk.green(`- Merging '${config.devBranch}' into '${releaseBranch}' `));
   await execute('git', ['merge', '--no-ff', config.devBranch]);
 }
 
 async function bumpPackageVersion(tag) {
-  console.log(chalk.green('- Bumping version ...'));
+  console.log(chalk.green('- Bumping version '));
   for (let file of config.packages) {
     let package = editJsonFile(file);
     package.set('version', tag);
@@ -200,16 +190,16 @@ async function bumpPackageVersion(tag) {
 
   await doManualChanges();
 
-  console.log(chalk.green('- Commiting new version ...'));
+  console.log(chalk.green('- Commiting new version '));
   await execute('git', ['add', '.']);
   await execute('git', ['commit', '-am', `Bump version to ${tag}.`]);
 
-  console.log(chalk.green('- Pushing new version ...'));
+  console.log(chalk.green('- Pushing new version '));
   await execute('git', ['push', '--set-upstream', 'origin', releaseBranch]);
 }
 
 async function mergeReleaseInMaster() {
-  console.log(chalk.green(`- Merging ${releaseBranch} into master ...`));
+  console.log(chalk.green(`- Merging ${releaseBranch} into master `));
 
   await execute('git', ['checkout', config.masterBranch]);
   await execute('git', ['fetch']);
@@ -219,19 +209,19 @@ async function mergeReleaseInMaster() {
 }
 
 async function createTag(tag) {
-  console.log(chalk.green(`- Tagging the release ...`));
+  console.log(chalk.green(`- Tagging the release `));
 
   await execute('git', ['tag', '-a', tag, '-m', `Release of ${tag}`]);
   await execute('git', ['push', 'origin', tag]);
 }
 
 async function switchToDevelopBranch() {
-  console.log(chalk.green('- Switching back to development branch ...'));
+  console.log(chalk.green('- Switching back to development branch '));
 
   await execute('git', ['checkout', config.devBranch]);
   await pullRemote();
 
-  console.log(chalk.green(`- Merging '${config.masterBranch}' into '${config.devBranch}' ... \n`));
+  console.log(chalk.green(`- Merging '${config.masterBranch}' into '${config.devBranch}' \n`));
 
   await execute('git', ['merge', '--no-ff', `origin/${config.masterBranch}`]);
   await execute('git', ['push']);
@@ -262,6 +252,7 @@ async function main() {
 
     console.log(chalk.bgGreen(`##### Release ${newTag} is ready. ##### \n`));
   } catch (e) {
+    console.log('');
     console.log(chalk.bgRed('ERROR'));
     console.log(chalk.bgRed(e.message));
 
