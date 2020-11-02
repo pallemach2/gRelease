@@ -1,0 +1,5 @@
+{
+  "masterBranch": "master",
+  "devBranch": "develop",
+  "packages": ["./package.json"]
+}

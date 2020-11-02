@@ -1,0 +1,23 @@
+{
+  "name": "grelease",
+  "version": "v0.0.0",
+  "description": "A simple Node-CLI to simplify git releases.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "cli",
+    "release",
+    "git"
+  ],
+  "author": "Pascal Schlicht",
+  "license": "ISC",
+  "dependencies": {
+    "bl": "^4.0.3",
+    "chalk": "^4.1.0",
+    "edit-json-file": "^1.5.0",
+    "yargs": "^16.1.0"
+  },
+  "bin": {
+    "grelease": "./index.js"
+  }
+}
