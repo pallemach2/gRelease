@@ -1,6 +1,6 @@
 {
   "name": "grelease",
-  "version": "v1.0.0",
+  "version": "v1.0.1",
   "description": "A Node-CLI to simplify git releases.",
   "main": "index.js",
   "scripts": {},
