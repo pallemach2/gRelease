@@ -17,11 +17,6 @@ let loadedFile = fs.readFileSync('./.grelease', 'utf8');
 const config = JSON.parse(loadedFile);
 let releaseBranch = '';
 
-let rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 async function execute(command, ags) {
   const child = childProcess.spawn(command, ags);
   const stdout = child.stdout ? new BufferList() : '';
@@ -116,6 +111,11 @@ async function readNewTag(newAttempt = false) {
       latestRelease = tags[tags.length - 1]
     }
 
+    let rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
     rl.question(newAttempt ? 'Version already exists. New version? ' : `Which version do you want to release? (Last release: ${latestRelease}) `, async (tag) => {
       if (await checkNewTag(tag)) {
         resolve(tag);
@@ -156,6 +156,11 @@ async function checkDevBranch() {
 
 async function doManualChanges() {
   return new Promise((resolve, _) => {
+    let rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
     rl.question("You can apply changes to the files now. Press Enter when you are ready to release ... ", async (tag) => {
       resolve();
       rl.close();
