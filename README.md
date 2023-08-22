@@ -1,5 +1,5 @@
 # gRelease
-A fucking simple git release helper.
+A simple git release helper.
 
 Just create a ```.grelease```-file in your project-root directory and define the name of your master and dev branch and the relativ-path to your package.json.
 
